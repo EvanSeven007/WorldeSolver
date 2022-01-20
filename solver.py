@@ -1,6 +1,5 @@
-from operator import le
 import pickle
-import random
+from collections import defaultdict
 
 WORD_LIST = []
 with open("five_words.txt", 'rb') as f:
@@ -14,8 +13,7 @@ letters_in_word - list of letters known to be in the word
 position_to_letter - mapping of known letter in a certain position
 """
 
-def guess(letters_used, letters_in_word, letter_to_position):
-    new_word_list = []
+def guess(letters_used, letters_in_word, letter_to_position, yellow_letters):
     global WORD_LIST
     for word in WORD_LIST:
         keep = True
@@ -28,24 +26,25 @@ def guess(letters_used, letters_in_word, letter_to_position):
         for index, character in letter_to_position.items():
             if(word[index] != character):
                 keep = False
-        
+        for index, char_set in yellow_letters.items():
+            for char in char_set:
+                if word[index] == char:
+                    keep = False
         if(keep):
-            new_word_list.append(word)
+            return word
     
     #WORD_LIST = new_word_list
-    if(len(new_word_list) == 0):
-        print("No words match requirements")
-        exit()
-    return new_word_list[0]
+    print("No words match restraints")
+    exit()
 
 def main():
     letters_used = set()
     letters_in_word = set()
     letter_to_position = {}
+    yellow_letters = defaultdict(set)
     q1 = input("Start? Y/N\n")
     if(q1 == "Y"):
-        #word = guess(letters_used, letters_in_word, letter_to_position)
-        #WORD_LIST.remove(word)
+        #Good starting word
         print("audio")
     
     while(True):
@@ -56,8 +55,8 @@ def main():
             letter_input = input("Letters Used :")
             if(letter_input.isalnum()):
                 letters_used.update(set(letter_input))
-            elif(letter_input == ""):
-                continue
+            elif(letter_input == "" or letter_input == " "):
+                pass
             else:
                 print("Malformed Input")
 
@@ -65,7 +64,7 @@ def main():
             if(letter_input.isalnum()):
                 letters_in_word.update(set(letter_input))
             elif(letter_input == ""):
-                continue
+                pass
             else:
                 print("malformed_input")
 
@@ -78,11 +77,20 @@ def main():
                     try:
                         letter_to_position[int(index_to_letter_string[i])] = index_to_letter_string[i + 1]
                     except:
-                        continue
-            
+                        pass
+
+            yellow_letter_string = input("Yellow Letters? :")
+            if(yellow_letter_string.isalnum()):
+                yellow_letter_list = list(yellow_letter_string)
+                for i in range(0, len(yellow_letter_list),2):
+                    try:
+                        yellow_letters[int(yellow_letter_list[i])].add(yellow_letter_list[i + 1])
+                    except:
+                        pass
+
             letters_used.discard(' ')
             letters_in_word.discard(' ')
-            word = guess(letters_used, letters_in_word, letter_to_position)
+            word = guess(letters_used, letters_in_word, letter_to_position, yellow_letters)
             print(word)
             WORD_LIST.remove(word)
         else:
