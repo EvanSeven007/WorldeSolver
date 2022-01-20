@@ -60,11 +60,11 @@ def main():
                 continue
             else:
                 print("Malformed Input")
+
             letter_input = input("Letters in Word :")
-            
             if(letter_input.isalnum()):
-                letters_used.update(set(letter_input))
-            elif(letters_used == ""):
+                letters_in_word.update(set(letter_input))
+            elif(letter_input == ""):
                 continue
             else:
                 print("malformed_input")
@@ -75,7 +75,10 @@ def main():
             if(index_to_letter_string.isalnum()):
                 index_to_letter_string = list(index_to_letter_string)
                 for i in range(0, len(index_to_letter_string), 2):
-                    letter_to_position[int(index_to_letter_string[i])] = index_to_letter_string[i + 1]
+                    try:
+                        letter_to_position[int(index_to_letter_string[i])] = index_to_letter_string[i + 1]
+                    except:
+                        continue
             
             letters_used.discard(' ')
             letters_in_word.discard(' ')
